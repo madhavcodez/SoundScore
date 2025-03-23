@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import UserProfile from './UserProfile';
 
 function Navbar({ userProfile }) {
+  const soundscoreUsername = localStorage.getItem('soundscore_username');
+  
   const handleLogout = () => {
-    // Clear local storage/cookies
     localStorage.removeItem('spotify_token');
     localStorage.removeItem('user_id');
-    // Redirect to home
+    localStorage.removeItem('soundscore_username');
+    localStorage.removeItem('spotify_display_name');
     window.location.href = '/';
   };
 
@@ -37,10 +39,13 @@ function Navbar({ userProfile }) {
               <div className="flex items-center space-x-3">
                 <img
                   src={userProfile.images?.[0]?.url || '/default-avatar.png'}
-                  alt={userProfile.display_name}
+                  alt={soundscoreUsername || userProfile.display_name}
                   className="w-8 h-8 rounded-full border border-[#8BA888]"
                 />
-                <span className="text-white">{userProfile.display_name}</span>
+                <div className="flex flex-col items-start">
+                  <span className="text-white font-medium">{soundscoreUsername}</span>
+                  <span className="text-gray-400 text-sm">{userProfile.display_name}</span>
+                </div>
               </div>
             </div>
           )}

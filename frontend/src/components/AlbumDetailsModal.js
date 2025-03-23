@@ -10,13 +10,21 @@ function AlbumDetailsModal({ album, onClose, onRate }) {
   const [isHovering, setIsHovering] = useState(0);
   const [reviews, setReviews] = useState([]);
   const [activeTab, setActiveTab] = useState('tracks'); // 'tracks' or 'reviews'
+  const [averageRating, setAverageRating] = useState(0);
+  const [totalRatings, setTotalRatings] = useState(0);
+
+  const calculateAverageRating = () => {
+    if (!reviews || reviews.length === 0) return 'N/A';
+    const total = reviews.reduce((acc, rev) => acc + (rev.rating || 0), 0);
+    return (total / reviews.length).toFixed(1);
+  };
 
   useEffect(() => {
-    const fetchAlbumDetails = async () => {
+    const fetchData = async () => {
       try {
         const token = new URLSearchParams(window.location.search).get('access_token');
         
-        // First get album details
+        // Fetch album details from Spotify
         const albumResponse = await axios.get(`https://api.spotify.com/v1/albums/${album.id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -27,11 +35,24 @@ function AlbumDetailsModal({ album, onClose, onRate }) {
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        // Don't wait for reviews since they're causing 404s
         setAlbumDetails({
           ...albumResponse.data,
           artistDetails: artistResponse.data
         });
+
+        // Try to fetch ratings, but don't let it break the modal if it fails
+        try {
+          const ratingsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/ratings/${album.id}`);
+          setReviews(ratingsResponse.data.ratings || []);
+          setAverageRating(ratingsResponse.data.averageRating || 0);
+          setTotalRatings(ratingsResponse.data.totalRatings || 0);
+        } catch (error) {
+          console.log('No ratings found for this album');
+          setReviews([]);
+          setAverageRating(0);
+          setTotalRatings(0);
+        }
+
         setLoading(false);
       } catch (error) {
         console.error('Error fetching album details:', error);
@@ -39,7 +60,7 @@ function AlbumDetailsModal({ album, onClose, onRate }) {
       }
     };
 
-    fetchAlbumDetails();
+    fetchData();
   }, [album.id]);
 
   const handleSubmitRating = async () => {
@@ -48,9 +69,31 @@ function AlbumDetailsModal({ album, onClose, onRate }) {
       return;
     }
     try {
-      await onRate(album.id, rating, review);
+      const userId = new URLSearchParams(window.location.search).get('userId');
+      const token = new URLSearchParams(window.location.search).get('access_token');
+      const soundscoreUsername = localStorage.getItem('soundscore_username');
+      
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/ratings`, {
+        albumId: album.id,
+        userId,
+        rating,
+        review,
+        username: soundscoreUsername,
+        timestamp: new Date().toISOString()
+      });
+
+      // Update local state with new review
+      setReviews(prevReviews => [{
+        ...response.data,
+        username: soundscoreUsername
+      }, ...prevReviews]);
+      
+      setAverageRating(response.data.averageRating);
+      setTotalRatings(prevTotal => prevTotal + 1);
+
       toast.success('Rating submitted successfully!');
-      onClose();
+      setRating(0);
+      setReview('');
     } catch (error) {
       toast.error('Failed to submit rating');
     }
@@ -172,19 +215,19 @@ function AlbumDetailsModal({ album, onClose, onRate }) {
                   <p className="text-gray-400 mb-2">Community Rating</p>
                   <div className="flex items-center justify-center space-x-3">
                     <span className="text-4xl font-bold text-white">
-                      {reviews.length > 0 
-                        ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)
-                        : 'N/A'}
+                      {calculateAverageRating()}
                     </span>
                     <div className="flex text-yellow-400 text-2xl">
-                      {reviews.length > 0 && Array(Math.round(reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length))
-                        .fill('★')
-                        .map((star, i) => (
-                          <span key={i}>{star}</span>
-                        ))}
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span key={star} className={star <= (averageRating || 0) ? 'text-yellow-400' : 'text-gray-600'}>
+                          ★
+                        </span>
+                      ))}
                     </div>
                   </div>
-                  <p className="text-gray-500 text-sm mt-2">{reviews.length} ratings</p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    {totalRatings} {totalRatings === 1 ? 'rating' : 'ratings'}
+                  </p>
                 </div>
 
                 <h3 className="text-xl font-bold text-white mb-4 text-center">Rate this Album</h3>
@@ -273,30 +316,37 @@ function AlbumDetailsModal({ album, onClose, onRate }) {
                       reviews.map((review, index) => (
                         <div key={index} className="bg-black/30 p-4 rounded-xl">
                           <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center">
-                              <img
-                                src={review.userImage || '/default-avatar.png'}
-                                alt={review.userName}
-                                className="w-8 h-8 rounded-full"
-                              />
-                              <span className="ml-2 text-white font-medium">{review.userName}</span>
+                            <div>
+                              <p className="text-white font-medium">{review.username}</p>
+                              <p className="text-sm text-gray-400">
+                                {new Date(review.timestamp).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })}
+                              </p>
                             </div>
-                            <div className="flex text-yellow-400">
-                              {Array(review.rating).fill('★').map((star, i) => (
-                                <span key={i}>{star}</span>
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <span
+                                  key={i}
+                                  className={`text-lg ${
+                                    i < review.rating ? 'text-yellow-400' : 'text-gray-600'
+                                  }`}
+                                >
+                                  ★
+                                </span>
                               ))}
                             </div>
                           </div>
-                          <p className="text-gray-300">{review.comment}</p>
-                          <p className="text-gray-500 text-sm mt-2">
-                            {new Date(review.timestamp).toLocaleDateString()}
-                          </p>
+                          {review.review && (
+                            <p className="text-gray-300 mt-2">{review.review}</p>
+                          )}
                         </div>
                       ))
                     ) : (
                       <div className="text-center text-gray-400 py-8">
-                        <p>No reviews yet</p>
-                        <p className="mt-2">Be the first to share your thoughts!</p>
+                        No reviews yet. Be the first to rate this album!
                       </div>
                     )}
                   </div>

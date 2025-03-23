@@ -1,6 +1,16 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
   spotifyId: {
     type: String,
     required: true,
@@ -8,8 +18,7 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   displayName: String,
   profileImage: String,
@@ -21,10 +30,7 @@ const userSchema = new mongoose.Schema({
     albumId: String,
     rating: Number,
     review: String,
-    timestamp: {
-      type: Date,
-      default: Date.now
-    }
+    timestamp: Date
   }],
   createdAt: {
     type: Date,

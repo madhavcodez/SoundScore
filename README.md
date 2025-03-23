@@ -1,59 +1,8 @@
-# SoundScore - Music Rating Platform
+# SoundScore
 
-SoundScore is a web application that allows users to rate, review, and discover music through Spotify integration. Users can track their listening history, rate albums, and share their musical taste with friends.
+A music rating and discovery platform integrated with Spotify.
 
-## Features
-
-- 🎵 Spotify Integration
-- ⭐ Album Rating System
-- 📊 Personal Music Statistics
-- 🎧 Track Preview Functionality
-- 👥 User Profiles
-- 📱 Responsive Design
-- 🌙 Dark Mode Interface
-
-## Tech Stack
-
-- Frontend:
-  - React.js
-  - Tailwind CSS
-  - Axios for API calls
-  - React Router for navigation
-  - React Hot Toast for notifications
-
-- Backend:
-  - Node.js
-  - Express.js
-  - MongoDB
-  - Spotify Web API
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v14 or higher)
-- npm or yarn
-- MongoDB instance
-- Spotify Developer Account
-
-### Environment Variables
-
-Create a `.env` file in both frontend and backend directories:
-
-```env
-# Frontend (.env)
-REACT_APP_API_URL=http://localhost:5000
-REACT_APP_SPOTIFY_CLIENT_ID=your_spotify_client_id
-
-# Backend (.env)
-PORT=5000
-MONGODB_URI=your_mongodb_uri
-SPOTIFY_CLIENT_ID=your_spotify_client_id
-SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-JWT_SECRET=your_jwt_secret
-```
-
-### Installation
+## Setup Instructions
 
 1. Clone the repository:
 ```bash
@@ -72,7 +21,11 @@ cd ../backend
 npm install
 ```
 
-3. Start the development servers:
+3. Set up environment variables:
+- Copy `.env.example` to `.env` in both frontend and backend directories
+- Fill in your Spotify API credentials and other configuration
+
+4. Start the development servers:
 ```bash
 # Backend
 cd backend
@@ -82,6 +35,21 @@ npm run dev
 cd frontend
 npm start
 ```
+
+5. Visit `http://localhost:3000` in your browser
+
+## Features
+- Spotify Integration
+- Album Rating System
+- User Profiles
+- Music Discovery
+- Social Features
+
+## Tech Stack
+- React
+- Node.js/Express
+- MongoDB
+- Spotify Web API
 
 ## Contributing
 
