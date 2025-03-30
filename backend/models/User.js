@@ -26,16 +26,48 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+  friendRequests: [{
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'accepted', 'declined'],
+      default: 'pending'
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
   ratings: [{
     albumId: String,
     rating: Number,
     review: String,
     timestamp: Date
   }],
+  topAlbums: [{
+    albumId: String,
+    position: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 5
+    },
+    addedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
+
+// Index for username search
+userSchema.index({ username: 'text' });
 
 module.exports = mongoose.model('User', userSchema); 

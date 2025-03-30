@@ -57,23 +57,20 @@ function Dashboard() {
       const userDataResponse = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${userId}`);
       setUserRatings(userDataResponse.data.ratings);
 
+      // Create a Set of rated album IDs for filtering
+      const ratedAlbumIds = new Set(userDataResponse.data.ratings.map(rating => rating.albumId));
+
       // Fetch all data in parallel
       const [userResponse, recentlyPlayedResponse, newReleasesResponse, topTracksResponse] = await Promise.all([
         axios.get('https://api.spotify.com/v1/me', { headers }),
-        axios.get('https://api.spotify.com/v1/me/player/recently-played?limit=20', { headers }),
+        axios.get('https://api.spotify.com/v1/me/player/recently-played?limit=50', { headers }),
         axios.get('https://api.spotify.com/v1/browse/new-releases?limit=20', { headers }),
         axios.get('https://api.spotify.com/v1/me/top/tracks?time_range=short_term&limit=50', { headers })
       ]);
 
       setUserProfile(userResponse.data);
-      setTrendingAlbums(newReleasesResponse.data.albums.items.map(album => ({
-        id: album.id,
-        name: album.name,
-        artist: album.artists[0].name,
-        imageUrl: album.images[0].url
-      })));
 
-      // Process recently played tracks
+      // Process recently played tracks with more accurate data
       const uniqueRecentAlbums = new Map();
       recentlyPlayedResponse.data.items.forEach(item => {
         const album = item.track.album;
@@ -82,48 +79,84 @@ function Dashboard() {
             id: album.id,
             name: album.name,
             artist: album.artists[0].name,
-            imageUrl: album.images[0].url
+            imageUrl: album.images[0].url,
+            playedAt: item.played_at // Add timestamp
           });
         }
       });
-      setRecentlyPlayed(Array.from(uniqueRecentAlbums.values()));
+      
+      // Sort by most recently played
+      const sortedRecentAlbums = Array.from(uniqueRecentAlbums.values())
+        .sort((a, b) => new Date(b.playedAt) - new Date(a.playedAt))
+        .slice(0, 20);
+      
+      setRecentlyPlayed(sortedRecentAlbums);
 
-      // Set ready to rate albums
-      const ratedAlbumIds = new Set(userRatings.map(rating => rating.albumId));
-      const readyToRateAlbums = Array.from(uniqueRecentAlbums.values())
-        .filter(album => !ratedAlbumIds.has(album.id))
-        .slice(0, 10);
-      setReadyToRate(readyToRateAlbums);
+      // Get trending albums from our backend (with dummy data for now)
+      const newReleases = newReleasesResponse.data.albums.items;
+      const trendingAlbumsData = newReleases.map(album => ({
+        id: album.id,
+        name: album.name,
+        artist: album.artists[0].name,
+        imageUrl: album.images[0].url,
+        // Generate random review counts between 100-500
+        reviewCount: Math.floor(Math.random() * 401) + 100,
+        // Generate random ratings between 3.5-5.0
+        averageRating: (Math.random() * 1.5 + 3.5).toFixed(1)
+      }))
+      .sort((a, b) => b.reviewCount - a.reviewCount) // Sort by review count
+      .slice(0, 20); // Take top 20
 
-      // Get user's top artists for recommendations
-      const topArtistsResponse = await axios.get('https://api.spotify.com/v1/me/top/artists', {
-        headers,
-        params: { limit: 5, time_range: 'short_term' }
+      setTrendingAlbums(trendingAlbumsData);
+
+      // Get user's recently played tracks to determine fully listened albums
+      const recentlyPlayedForReadyToRate = await axios.get('https://api.spotify.com/v1/me/player/recently-played?limit=50', { headers });
+      
+      // Process recently played tracks to identify fully listened albums
+      const albumPlayCounts = new Map();
+      recentlyPlayedForReadyToRate.data.items.forEach(item => {
+        const album = item.track.album;
+        const currentCount = albumPlayCounts.get(album.id) || 0;
+        albumPlayCounts.set(album.id, currentCount + 1);
       });
 
-      // Get recommendations based on top artists
-      const artistIds = topArtistsResponse.data.items.map(artist => artist.id).join(',');
-      const recommendationsResponse = await axios.get('https://api.spotify.com/v1/recommendations', {
-        headers,
-        params: {
-          seed_artists: artistIds,
-          limit: 20
-        }
-      });
+      // Get album details to check track counts
+      const albumDetailsPromises = Array.from(albumPlayCounts.entries())
+        .filter(([_, count]) => count >= 1) // Lower threshold to 1 play
+        .map(([albumId]) => 
+          axios.get(`https://api.spotify.com/v1/albums/${albumId}`, { headers })
+            .catch(() => null)
+        );
 
-      // Process recommendations
-      const suggestions = recommendationsResponse.data.tracks.map(track => ({
-        id: track.album.id,
-        name: track.album.name,
-        artist: track.album.artists[0].name,
-        imageUrl: track.album.images[0].url
-      }));
+      const albumDetailsResponses = await Promise.all(albumDetailsPromises);
+      
+      // Filter for fully listened albums
+      const readyToRateList = albumDetailsResponses
+        .filter(response => response !== null)
+        .map(response => {
+          const album = response.data;
+          const playCount = albumPlayCounts.get(album.id);
+          const trackCount = album.tracks.total;
+          
+          // Consider an album fully listened if play count is close to or exceeds track count
+          // Threshold set to 70% of tracks
+          if (playCount >= trackCount * 0.7) {
+            return {
+              id: album.id,
+              name: album.name,
+              artist: album.artists[0].name,
+              imageUrl: album.images[0].url,
+              playCount,
+              trackCount
+            };
+          }
+          return null;
+        })
+        .filter(album => album !== null && !ratedAlbumIds.has(album.id))
+        .slice(0, 20);
 
-      // Filter out duplicates and set suggested albums
-      const uniqueSuggestions = Array.from(new Set(suggestions.map(a => a.id)))
-        .map(id => suggestions.find(a => a.id === id));
-
-      setSuggestedAlbums(uniqueSuggestions);
+      console.log('Final Ready to Rate Albums:', readyToRateList);
+      setReadyToRate(readyToRateList);
 
       setIsLoading(false);
     } catch (error) {
@@ -135,8 +168,11 @@ function Dashboard() {
     }
   };
 
+  // Add a refresh interval for suggestions
   useEffect(() => {
     fetchData();
+    const interval = setInterval(fetchData, 5 * 60 * 1000); // Refresh every 5 minutes
+    return () => clearInterval(interval);
   }, [navigate]);
 
   // Expose handleRatingSubmit to window
@@ -309,6 +345,11 @@ function Dashboard() {
     }
   };
 
+  const handleAlbumSelect = (album) => {
+    setSelectedAlbum(album);
+    setShowRatingModal(true);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#1a1a1a] pt-24 pb-8 px-8">
@@ -322,38 +363,83 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a]">
+    <div className="min-h-screen bg-gradient-to-br from-[#141414] via-[#1C2820] to-[#141414] relative overflow-hidden">
+      {/* Global Ambient Background Graphics */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute w-[800px] h-[800px] bg-[#8BA888]/5 rounded-full blur-3xl -top-40 -left-40 animate-pulse"></div>
+        <div className="absolute w-[800px] h-[800px] bg-[#8BA888]/5 rounded-full blur-3xl -bottom-40 -right-40 animate-pulse delay-1000"></div>
+        <div className="absolute w-[800px] h-[800px] bg-[#8BA888]/5 rounded-full blur-3xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse delay-500"></div>
+        <div className="absolute w-[600px] h-[600px] bg-[#8BA888]/5 rounded-full blur-3xl top-1/4 right-0 animate-pulse delay-2000"></div>
+        <div className="absolute w-[600px] h-[600px] bg-[#8BA888]/5 rounded-full blur-3xl bottom-1/4 left-0 animate-pulse delay-1500"></div>
+      </div>
+
       <Toaster position="top-center" />
       <Navbar userProfile={userProfile} />
       
-      <div className="pt-20 px-8 pb-8 max-w-7xl mx-auto">
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <AlbumSearch onResults={setSearchResults} />
+      <div className="pt-20 relative z-10">
+        {/* Hero Section */}
+        <div className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+          {/* Content */}
+          <div className="relative z-10 text-center px-4">
+            <h1 className="text-6xl font-bold text-white mb-6">
+              Discover Your Next
+              <span className="block text-[#8BA888] mt-2">Favorite Album</span>
+            </h1>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-8">
+              Rate albums, share your thoughts, and connect with music lovers worldwide
+            </p>
+            <div className="w-full max-w-2xl mx-auto">
+              <AlbumSearch onSelectAlbum={handleAlbumSelect} />
+            </div>
+          </div>
         </div>
 
-        {/* Album Sections */}
-        <div className="space-y-12">
-          {searchResults.length > 0 && (
-            <Section title="Search Results" albums={searchResults} showAddButton />
+        {/* Main Content */}
+        <div className="px-8 pb-8 max-w-7xl mx-auto">
+          {/* Album Sections */}
+          <div className="space-y-24">
+            {console.log('Rendering sections with:', {
+              recentlyPlayed,
+              trendingAlbums,
+              suggestedAlbums,
+              readyToRate
+            })}
+            
+            {searchResults.length > 0 && (
+              <Section title="Search Results" albums={searchResults} showAddButton />
+            )}
+
+            {suggestedAlbums.length > 0 && (
+              <Section title="Suggested For You" albums={suggestedAlbums} />
+            )}
+
+            {recentlyPlayed.length > 0 && (
+              <Section title="Recently Played" albums={recentlyPlayed} />
+            )}
+
+            {trendingAlbums.length > 0 && (
+              <Section title="Trending Now" albums={trendingAlbums} />
+            )}
+
+            {readyToRate.length > 0 && (
+              <Section title="Ready to Rate" albums={readyToRate} showAddButton />
+            )}
+          </div>
+
+          {/* Rating Modal */}
+          {showRatingModal && selectedAlbum && (
+            <RatingModal
+              album={selectedAlbum}
+              onClose={() => {
+                setShowRatingModal(false);
+                setSelectedAlbum(null);
+              }}
+              onSubmit={handleRatingSubmit}
+            />
           )}
 
-          <Section title="Recently Played" albums={recentlyPlayed} />
-          <Section title="Trending Now" albums={trendingAlbums} />
-          <Section title="Suggested For You" albums={suggestedAlbums} />
-          <Section title="Ready to Rate" albums={readyToRate} showAddButton />
+          <FloatingAddButton onClick={() => setShowSearchModal(true)} />
         </div>
-
-        {/* Rating Modal */}
-        {showRatingModal && (
-          <RatingModal
-            album={selectedAlbum}
-            onClose={() => setShowRatingModal(false)}
-            onSubmit={handleRatingSubmit}
-          />
-        )}
-
-        <FloatingAddButton onClick={() => setShowSearchModal(true)} />
       </div>
     </div>
   );

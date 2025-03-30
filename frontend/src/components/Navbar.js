@@ -1,57 +1,118 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import UserProfile from './UserProfile';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Navbar({ userProfile }) {
-  const soundscoreUsername = localStorage.getItem('soundscore_username');
-  
-  const handleLogout = () => {
-    localStorage.removeItem('spotify_token');
-    localStorage.removeItem('user_id');
-    localStorage.removeItem('soundscore_username');
-    localStorage.removeItem('spotify_display_name');
-    window.location.href = '/';
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const isActive = (path) => {
+    if (path === '/') {
+      return location.pathname === '/dashboard';
+    }
+    return location.pathname === path;
   };
 
+  const handleNavigation = (path) => {
+    const token = localStorage.getItem('spotify_token');
+    const userId = localStorage.getItem('user_id');
+    
+    if (path === '/dashboard') {
+      navigate(`/dashboard?access_token=${token}&userId=${userId}`);
+    } else {
+      navigate(path);
+    }
+  };
+
+  // Get the profile image URL from the correct path in userProfile
+  const profileImageUrl = userProfile?.spotifyProfile?.images?.[0]?.url || 
+                         userProfile?.images?.[0]?.url || 
+                         'https://via.placeholder.com/32';
+
   return (
-    <div className="fixed top-0 left-0 right-0 bg-[#141414]/90 backdrop-blur-md z-50 border-b border-[#2C382E]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isScrolled ? 'bg-[#1C2820]/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+    }`}>
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/dashboard" className="text-2xl font-extrabold text-[#8BA888]">
-              SoundScore
-            </Link>
-            <nav className="ml-10 flex items-center space-x-4">
-              <Link to="/dashboard" className="text-gray-300 hover:text-white px-3 py-2 rounded-md">
-                Home
-              </Link>
-              <Link to="/friends" className="text-gray-300 hover:text-white px-3 py-2 rounded-md">
-                Friends
-              </Link>
-              <Link to="/top-albums" className="text-gray-300 hover:text-white px-3 py-2 rounded-md">
-                Top Albums
-              </Link>
-            </nav>
-          </div>
-          
-          {userProfile && (
-            <div className="flex items-center">
-              <div className="flex items-center space-x-3">
-                <img
-                  src={userProfile.images?.[0]?.url || '/default-avatar.png'}
-                  alt={soundscoreUsername || userProfile.display_name}
-                  className="w-8 h-8 rounded-full border border-[#8BA888]"
-                />
-                <div className="flex flex-col items-start">
-                  <span className="text-white font-medium">{soundscoreUsername}</span>
-                  <span className="text-gray-400 text-sm">{userProfile.display_name}</span>
-                </div>
-              </div>
+          {/* Logo */}
+          <button 
+            onClick={() => handleNavigation('/dashboard')}
+            className="flex items-center space-x-2 hover:opacity-90 transition-opacity"
+          >
+            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+              <span className="text-[#1C2820] font-bold text-lg">SS</span>
             </div>
+            <span className="text-white font-bold text-xl tracking-tight">SoundScore</span>
+          </button>
+
+          {/* Navigation Links */}
+          <div className="hidden md:flex items-center space-x-8">
+            <button 
+              onClick={() => handleNavigation('/dashboard')}
+              className={`text-sm font-medium transition-colors ${
+                isActive('/') ? 'text-[#8BA888] cursor-default' : 'text-white hover:text-[#8BA888]'
+              }`}
+            >
+              Home
+            </button>
+            <Link 
+              to="/profile" 
+              className={`text-sm font-medium transition-colors ${
+                isActive('/profile') ? 'text-[#8BA888] cursor-default' : 'text-white hover:text-[#8BA888]'
+              }`}
+            >
+              Profile
+            </Link>
+            <Link 
+              to="/search" 
+              className={`text-sm font-medium transition-colors ${
+                isActive('/search') ? 'text-[#8BA888] cursor-default' : 'text-white hover:text-[#8BA888]'
+              }`}
+            >
+              Search
+            </Link>
+            <Link 
+              to="/friends" 
+              className={`text-sm font-medium transition-colors ${
+                isActive('/friends') ? 'text-[#8BA888] cursor-default' : 'text-white hover:text-[#8BA888]'
+              }`}
+            >
+              Friends
+            </Link>
+          </div>
+
+          {/* Profile Section */}
+          {userProfile && (
+            <button 
+              onClick={() => handleNavigation('/profile')}
+              className="flex items-center space-x-3 group ml-4"
+            >
+              <div className="relative">
+                <img 
+                  src={profileImageUrl}
+                  alt="madhatter" 
+                  className="w-8 h-8 rounded-full border-2 border-[#8BA888] group-hover:border-white transition-colors"
+                />
+                <div className="absolute inset-0 rounded-full bg-[#8BA888]/20 group-hover:bg-[#8BA888]/30 transition-colors"></div>
+              </div>
+              <span className="text-white text-sm font-medium group-hover:text-[#8BA888] transition-colors">
+                madhatter
+              </span>
+            </button>
           )}
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
 

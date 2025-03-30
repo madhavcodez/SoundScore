@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import AlbumDetailsModal from './AlbumDetailsModal';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -49,73 +50,73 @@ function Section({ title, albums, showAddButton }) {
   };
 
   const handleAlbumClick = (album) => {
-    const formattedAlbum = {
-      id: album.id,
-      name: album.name,
-      artist: album.artist || album.artists?.[0]?.name,
-      imageUrl: album.imageUrl || album.images?.[0]?.url,
-      artists: album.artists || [{ name: album.artist }]
-    };
     console.log('Album being clicked:', album);
-    setSelectedAlbum(formattedAlbum);
+    setSelectedAlbum(album);
   };
 
+  if (!albums || albums.length === 0) {
+    return null; // Don't render the section if there are no albums
+  }
+
   return (
-    <div className="relative group">
+    <div className="relative">
       <h2 className="text-2xl font-bold text-white mb-6">{title}</h2>
-      
-      {/* Scroll Buttons */}
-      <button 
-        onClick={() => scroll('left')}
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 p-3 rounded-full 
-                  text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300
-                  hover:bg-black/70 -translate-x-1/2 backdrop-blur-sm"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
-      <div 
-        ref={scrollContainerRef}
-        className="flex overflow-x-auto space-x-6 pb-4 scrollbar-hide scroll-smooth"
-      >
-        {albums.map((album) => (
-          <div
-            key={album.id}
-            className="flex-none w-48 cursor-pointer transform transition-transform duration-300 hover:scale-105"
-            onClick={() => handleAlbumClick(album)}
-          >
-            <div className="relative aspect-square">
-              <img
-                src={album.imageUrl || album.images?.[0]?.url}
-                alt={album.name}
-                className="w-full h-full object-cover rounded-lg"
-              />
-              <div className="absolute inset-0 bg-black opacity-0 hover:opacity-60 transition-opacity duration-300 rounded-lg flex items-center justify-center">
-                <button className="text-white bg-[#8BA888] px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transform scale-95 group-hover:scale-100 transition-all duration-300">
-                  View Details
-                </button>
+      <div className="group relative">
+        <button 
+          onClick={() => scroll('left')}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 p-2 rounded-full 
+                   text-[#A4C3A2] opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                   hover:bg-black/70 -translate-x-1/2"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        
+        <div ref={scrollContainerRef} className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+          {albums.map((album) => (
+            <div 
+              key={album.id}
+              onClick={() => handleAlbumClick(album)}
+              className="flex-none w-48 transform transition-transform duration-300 
+                       hover:scale-105 cursor-pointer"
+            >
+              <div className="aspect-square rounded-lg overflow-hidden mb-2 bg-[#2C382E]/30">
+                <img 
+                  src={album.imageUrl}
+                  alt={album.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
+              <h3 className="font-medium truncate text-white">{album.name}</h3>
+              <p className="text-sm text-[#8BA888] truncate">{album.artist}</p>
+              {album.review && (
+                <div className="mt-2 text-sm text-[#8BA888]">
+                  <Link 
+                    to={`/profile/${album.userId}`}
+                    className="font-medium text-[#A4C3A2] hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {album.username}
+                  </Link>
+                  <p className="mt-1">{album.review}</p>
+                </div>
+              )}
             </div>
-            <h3 className="mt-2 text-white font-semibold truncate">{album.name}</h3>
-            <p className="text-gray-400 text-sm truncate">
-              {album.artist || album.artists?.[0]?.name}
-            </p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <button 
-        onClick={() => scroll('right')}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 p-3 rounded-full 
-                  text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300
-                  hover:bg-black/70 translate-x-1/2 backdrop-blur-sm"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+        <button 
+          onClick={() => scroll('right')}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 p-2 rounded-full 
+                   text-[#A4C3A2] opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                   hover:bg-black/70 translate-x-1/2"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
 
       {selectedAlbum && (
         <AlbumDetailsModal

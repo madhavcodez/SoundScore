@@ -70,12 +70,12 @@ router.get('/spotify/callback', async (req, res) => {
 // New signup endpoint
 router.post('/signup', async (req, res) => {
   try {
-    const { username, password, spotifyId, email, displayName } = req.body;
+    const { username, spotifyId, email, displayName } = req.body;
     
     console.log('Received signup request:', { username, spotifyId, email, displayName });
 
     // Validate required fields
-    if (!username || !password || !spotifyId || !email) {
+    if (!username || !spotifyId || !email) {
       console.log('Missing required fields:', { username, spotifyId, email });
       return res.status(400).json({ 
         error: 'missing_fields',
@@ -105,13 +105,9 @@ router.post('/signup', async (req, res) => {
       });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
+    // Create user without password (since we're using Spotify auth)
     const user = new User({
       username,
-      password: hashedPassword,
       spotifyId,
       email,
       displayName,
