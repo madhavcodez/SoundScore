@@ -58,7 +58,7 @@ SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/SoundScore.git
+git clone https://github.com/madhavcodez/SoundScore.git
 cd SoundScore
 ```
 
@@ -125,10 +125,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Tailwind CSS](https://tailwindcss.com/) for the beautiful styling
 - All contributors and users of SoundScore
 
-## 📞 Support
-
-For support, email support@soundscore.com or join our Discord server.
-
 ---
 
-Made with ❤️ by [Your Name] 
+Made with ❤️ by Madhav Chauhan
+
+Contact: madhavcbusiness@gmail.com 
