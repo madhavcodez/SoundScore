@@ -9,7 +9,9 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: function() {
+      return !this.spotifyId; // Only required if not using Spotify auth
+    }
   },
   spotifyId: {
     type: String,
