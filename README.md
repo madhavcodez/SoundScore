@@ -1,113 +1,132 @@
-# SoundScore 🎵
+# <img src="frontend/public/ss-logo.png" width="30" alt="SS Logo"> SoundScore
 
-A modern music rating and discovery platform built with the MERN stack, featuring Spotify integration and a beautiful, responsive UI.
+<div align="center">
+  <h3>🎵 Rate, Share, and Discover Music</h3>
+  <p>A modern web application for music enthusiasts to rate albums, share their musical journey, and connect with like-minded listeners.</p>
 
-## 🌟 Features
+  [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+  ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
+  ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=flat&logo=node.js&logoColor=white)
+  ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=flat&logo=mongodb&logoColor=white)
+  ![Spotify](https://img.shields.io/badge/Spotify-1ED760?style=flat&logo=spotify&logoColor=white)
+</div>
 
-### Core Features
-- **Spotify Integration**: Seamless authentication and album discovery
-- **Album Ratings & Reviews**: Rate and review your favorite albums
-- **Custom Top 6 Albums**: Curate and showcase your favorite albums on your profile
-- **Friend System**: Connect with other music enthusiasts
-- **Lists**: Create and share custom album lists
-- **Comments & Likes**: Engage with other users' reviews and lists
+## ✨ Features
 
-### Technical Features
-- **Real-time Updates**: Instant feedback on ratings and interactions
-- **Responsive Design**: Beautiful UI that works on all devices
-- **Secure Authentication**: Protected routes and secure API endpoints
-- **Modern UI/UX**: Clean, intuitive interface with smooth animations
-- **Search & Filter**: Find albums, users, and lists easily
+- 🎧 **Spotify Integration**: Seamlessly connect with your Spotify account
+- 📊 **Album Ratings**: Rate and review your favorite albums
+- 🔍 **Smart Discovery**: Get personalized album recommendations
+- 👥 **Social Features**: Connect with friends and share your music taste
+- 📱 **Responsive Design**: Beautiful interface on any device
+- 🌙 **Dark Mode**: Easy on the eyes, perfect for night listening sessions
+
+## 🖼️ Screenshots
+
+<div align="center">
+  <img src="docs/screenshots/landing.png" width="45%" alt="Landing Page">
+  <img src="docs/screenshots/dashboard.png" width="45%" alt="Dashboard">
+</div>
+
+<div align="center">
+  <img src="docs/screenshots/album-view.png" width="45%" alt="Album View">
+  <img src="docs/screenshots/profile.png" width="45%" alt="Profile Page">
+</div>
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- MongoDB
+- Spotify Developer Account
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/SoundScore.git
+cd SoundScore
+```
+
+2. Install dependencies:
+```bash
+# Install backend dependencies
+cd backend
+npm install
+
+# Install frontend dependencies
+cd ../frontend
+npm install
+```
+
+3. Set up environment variables:
+```bash
+# Backend (.env)
+MONGODB_URI=your_mongodb_uri
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+JWT_SECRET=your_jwt_secret
+
+# Frontend (.env)
+REACT_APP_API_URL=http://localhost:5000
+```
+
+4. Start the development servers:
+```bash
+# Start backend server
+cd backend
+npm run dev
+
+# Start frontend server (in a new terminal)
+cd frontend
+npm start
+```
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 - React.js
+- Framer Motion
 - Tailwind CSS
-- React Router
 - Axios
-- React Beautiful DnD
-- React Hot Toast
 
 ### Backend
 - Node.js
 - Express.js
 - MongoDB
-- Mongoose
 - JWT Authentication
+
+### APIs
 - Spotify Web API
+- Last.fm API (for additional music data)
 
-## 🚀 Getting Started
+## 📱 Key Features Breakdown
 
-### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB
-- Spotify Developer Account
-- npm or yarn
+### Album Discovery
+- Personalized recommendations based on listening history
+- Trending albums in your network
+- New releases from favorite artists
 
-### Environment Variables
-Create a `.env` file in the backend directory:
-```env
-MONGODB_URI=your_mongodb_uri
-JWT_SECRET=your_jwt_secret
-SPOTIFY_CLIENT_ID=your_spotify_client_id
-SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-```
+### Rating System
+- Half-star rating system (0.5 to 5 stars)
+- Detailed review support
+- Rating history and statistics
 
-### Installation
+### Social Features
+- Follow other music enthusiasts
+- Share ratings and reviews
+- Collaborative playlists
+- Activity feed
 
-1. Clone the repository
-```bash
-git clone https://github.com/madhavcodez/SoundScore.git
-cd SoundScore
-```
-
-2. Install backend dependencies
-```bash
-cd backend
-npm install
-```
-
-3. Install frontend dependencies
-```bash
-cd ../frontend
-npm install
-```
-
-4. Start the development servers
-```bash
-# Terminal 1 - Backend
-cd backend
-npm run dev
-
-# Terminal 2 - Frontend
-cd frontend
-npm start
-```
-
-## 📱 Screenshots
-
-### Dashboard
-![Dashboard](screenshots/dashboard.png)
-
-### Album Details
-![Album Details](screenshots/album-details.png)
-
-### Profile Page
-![Profile](screenshots/profile.png)
-
-### Lists
-![Lists](screenshots/lists.png)
-
-## 🔒 Security
-
-- JWT-based authentication
-- Secure password hashing
-- Protected API routes
-- Environment variable protection
-- Input validation and sanitization
+### Profile Customization
+- Listening statistics
+- Rating distribution
+- Favorite genres
+- Custom lists and collections
 
 ## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -121,12 +140,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [Spotify](https://www.spotify.com/) for their amazing API
-- [Tailwind CSS](https://tailwindcss.com/) for the beautiful styling
-- All contributors and users of SoundScore
+- [Spotify Web API](https://developer.spotify.com/documentation/web-api/)
+- [Last.fm API](https://www.last.fm/api)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Framer Motion](https://www.framer.com/motion/)
 
 ---
 
-Made with ❤️ by Madhav Chauhan
-
-Contact: madhavcbusiness@gmail.com 
+<div align="center">
+  <sub>Built with ❤️ by music lovers, for music lovers.</sub>
+</div> 
