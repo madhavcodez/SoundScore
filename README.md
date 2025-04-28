@@ -1,4 +1,4 @@
-# <img src="frontend/public/ss-logo.png" width="30" alt="SS Logo"> SoundScore
+# <img src="logo.png" width="30" alt="SS Logo"> SoundScore
 
 <div align="center">
   <h3>🎵 Rate, Share, and Discover Music</h3>
@@ -22,14 +22,34 @@
 
 ## 🖼️ Screenshots
 
+### Main Features
 <div align="center">
   <img src="docs/screenshots/landing.png" width="45%" alt="Landing Page">
   <img src="docs/screenshots/dashboard.png" width="45%" alt="Dashboard">
 </div>
 
+### Album Experience
 <div align="center">
   <img src="docs/screenshots/album-view.png" width="45%" alt="Album View">
+  <img src="docs/screenshots/AlbumSearch.png" width="45%" alt="Album Search">
+</div>
+
+### User Features
+<div align="center">
   <img src="docs/screenshots/profile.png" width="45%" alt="Profile Page">
+  <img src="docs/screenshots/ratingsstats.png" width="45%" alt="Rating Statistics">
+</div>
+
+### Social Features
+<div align="center">
+  <img src="docs/screenshots/reviewfeature.png" width="45%" alt="Review Feature">
+  <img src="docs/screenshots/FavoritesAddAlbum.png" width="45%" alt="Add to Favorites">
+</div>
+
+### Additional Features
+<div align="center">
+  <img src="docs/screenshots/artistsearch.png" width="45%" alt="Artist Search">
+  <img src="docs/screenshots/createurusernamepage.png" width="45%" alt="Create Username">
 </div>
 
 ## 🚀 Getting Started
