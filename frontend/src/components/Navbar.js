@@ -52,7 +52,12 @@ function Navbar({ userProfile }) {
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
               <span className="text-[#1C2820] font-bold text-lg">SS</span>
             </div>
-            <span className="text-white font-bold text-xl tracking-tight">SoundScore</span>
+            <span className="text-white font-bold text-xl tracking-tight">
+              SoundScore
+              <span className="hidden lg:inline text-sm font-medium ml-2 opacity-90">
+                (2025 beta v0.01)
+              </span>
+            </span>
           </button>
 
           {/* Navigation Links */}

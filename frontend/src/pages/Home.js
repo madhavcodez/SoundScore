@@ -13,11 +13,11 @@ function Home() {
         {/* Hero Section */}
         <div className="mb-16 space-y-6">
           <h1 className="text-7xl font-bold text-[#8BA888] tracking-tight">
-            Your Music Journey,
-            <span className="block text-white mt-2">Rated & Shared</span>
+            SoundScore
+            <span className="block text-white mt-2">(2025 beta v0.01)</span>
           </h1>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Join a community of music enthusiasts. Rate albums, discover new artists, and share your musical taste with friends.
+            This is the old open-source fun web app I built in 2025. Rate albums, discover artists, and share your taste with friends.
           </p>
           
           {/* Centered CTA Button */}

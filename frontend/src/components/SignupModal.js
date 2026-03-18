@@ -106,10 +106,10 @@ function SignupModal({ spotifyData, onComplete }) {
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-[#8BA888] tracking-tight mb-4">
             Welcome to
-            <span className="block text-white mt-2">SoundScore</span>
+            <span className="block text-white mt-2">SoundScore (2025 beta v0.01)</span>
           </h1>
           <p className="text-gray-400 text-lg">
-            Create your account to start rating and discovering music
+            Old web version from 2025 - create your account to start rating and discovering music
           </p>
         </div>
 

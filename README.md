@@ -1,8 +1,8 @@
-# <img src="logo.png" width="30" alt="SS Logo"> SoundScore
+# <img src="logo.png" width="30" alt="SS Logo"> SoundScore (2025 beta v0.01)
 
 <div align="center">
-  <h3>🎵 Rate, Share, and Discover Music</h3>
-  <p>A modern web application for music enthusiasts to rate albums, share their musical journey, and connect with like-minded listeners.</p>
+  <h3>Legacy Web Version Archive</h3>
+  <p>Open-source fun web app developed in 2025. Archived as the original SoundScore beta web release.</p>
 
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
   ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
@@ -11,18 +11,22 @@
   ![Spotify](https://img.shields.io/badge/Spotify-1ED760?style=flat&logo=spotify&logoColor=white)
 </div>
 
-## ✨ Features
+> This repository contains the original web beta release: **SoundScore (2025 beta v0.01)**.
+>
+> It is maintained as a legacy archive while the next-generation production app is prepared for release.
+
+## Legacy Beta Features
 
 - 🎧 **Spotify Integration**: Seamlessly connect with your Spotify account
 - 📊 **Album Ratings**: Rate and review your favorite albums
 - 🔍 **Smart Discovery**: Get personalized album recommendations
 - 👥 **Social Features**: Connect with friends and share your music taste
-- 📱 **Responsive Design**: Beautiful interface on any device
-- 🌙 **Dark Mode**: Easy on the eyes, perfect for night listening sessions
+- 📱 **Responsive Design**: Works across desktop and mobile
+- 🌙 **Dark Mode**: Built for long listening sessions
 
-## 🖼️ Screenshots
+## Screenshots (Legacy Web Build)
 
-### Main Features
+### Landing and Dashboard
 <div align="center">
   <img src="docs/screenshots/landing.png" width="45%" alt="Landing Page">
   <img src="docs/screenshots/dashboard.png" width="45%" alt="Dashboard">
@@ -34,25 +38,25 @@
   <img src="docs/screenshots/AlbumSearch.png" width="45%" alt="Album Search">
 </div>
 
-### User Features
+### User Profile and Stats
 <div align="center">
   <img src="docs/screenshots/profile.png" width="45%" alt="Profile Page">
   <img src="docs/screenshots/ratingsstats.png" width="45%" alt="Rating Statistics">
 </div>
 
-### Social Features
+### Social and Reviews
 <div align="center">
   <img src="docs/screenshots/reviewfeature.png" width="45%" alt="Review Feature">
   <img src="docs/screenshots/FavoritesAddAlbum.png" width="45%" alt="Add to Favorites">
 </div>
 
-### Additional Features
+### Discovery and Search
 <div align="center">
   <img src="docs/screenshots/artistsearch.png" width="45%" alt="Artist Search">
   <img src="docs/screenshots/createurusernamepage.png" width="45%" alt="Create Username">
 </div>
 
-## 🚀 Getting Started
+## Running the Legacy Web Version
 
 ### Prerequisites
 
@@ -102,7 +106,7 @@ cd frontend
 npm start
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - React.js
@@ -120,7 +124,7 @@ npm start
 - Spotify Web API
 - Last.fm API (for additional music data)
 
-## 📱 Key Features Breakdown
+## Functional Areas
 
 ### Album Discovery
 - Personalized recommendations based on listening history
@@ -144,9 +148,9 @@ npm start
 - Favorite genres
 - Custom lists and collections
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+Contributions are welcome for maintenance and archival improvements. Please see the contributing workflow below.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -154,11 +158,11 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Spotify Web API](https://developer.spotify.com/documentation/web-api/)
 - [Last.fm API](https://www.last.fm/api)
@@ -168,5 +172,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-  <sub>Built with ❤️ by music lovers, for music lovers.</sub>
+  <sub>SoundScore (2025 beta v0.01) — legacy open-source web app from 2025.</sub>
 </div> 
